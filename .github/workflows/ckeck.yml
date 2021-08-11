@@ -1,0 +1,40 @@
+name: Check
+
+on: [push]
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+        - uses: actions/checkout@v2
+
+        - name: Setup Python 3.8
+          uses: actions/setup-python@v1
+          with:
+            python-version: 3.8.6
+            architecture: x64
+            
+        - name: Cache
+          uses: actions/cache@v1
+          id: cache
+            
+        - name: Install flake8
+          run: pip install flake8
+        - name: Run flake8
+          run: flake8 /src *.py
+          
+        - name: Install mypy
+          run: pip install mypy
+        - name: Run mypy
+          run: mypy /src *.py
+          
+        - name: Install black
+          run: pip install black
+        - name: Run black
+          run: black /src *.py --check
+          
+        - name: Install isort
+          run: pip install isort
+        - name: Run isort
+          run: isort --check --diff /src *.py
