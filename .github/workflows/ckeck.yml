@@ -15,10 +15,6 @@ jobs:
             python-version: 3.8.11
             architecture: x64
             
-        - name: Cache
-          uses: actions/cache@v1
-          id: cache
-            
         - name: Install flake8
           run: pip install flake8
         - name: Run flake8
