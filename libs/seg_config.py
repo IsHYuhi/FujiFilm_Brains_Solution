@@ -27,7 +27,7 @@ class Config:
 
     model_name: str = "efficientnet_b4"
     optimizer: str = "Adam"
-    dataset_name: str = "Q3_train_label.csv"
+    dataset_name: str = "Q3"
     encoder_name: str = "efficientnet-b4"
 
     def __post_init__(self) -> None:

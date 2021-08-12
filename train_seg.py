@@ -37,9 +37,9 @@ seed_everything(seed=42)
 def get_parser() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         prog="semantic segmentation",
-        usage="python3 main.py",
+        usage="python3 train_seg.py",
         description="""
-        This module demonstrates semantic segmentation using U-Net based Encoder-Decoder
+        This module demonstrates semantic segmentation.
         """,
         add_help=True,
     )
