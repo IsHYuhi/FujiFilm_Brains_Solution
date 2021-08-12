@@ -14,8 +14,7 @@ from torch.utils.data import DataLoader
 from torchvision.utils import make_grid, save_image
 from tqdm import tqdm
 
-from libs.data_loader import (SegImageDataset, SegImageTransform,
-                              seg_make_datapath_list)
+from libs.data_loader import SegImageDataset, SegImageTransform, seg_make_datapath_list
 from libs.Loss import BinaryFocalLoss, DiceLoss
 from libs.models import get_model
 from libs.seg_config import Config, get_config

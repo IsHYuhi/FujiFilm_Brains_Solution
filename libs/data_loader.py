@@ -321,7 +321,7 @@ class BinaryBalancedSampler:
             # 少数派データ(minor_indices)からは順番に選び出し
             indices = (
                 self.minor_indices[
-                    self.used_indices:self.used_indices + self.n_samples
+                    self.used_indices : self.used_indices + self.n_samples
                 ].tolist()
                 + np.random.choice(
                     self.major_indices, self.n_samples, replace=False
@@ -334,7 +334,7 @@ class BinaryBalancedSampler:
             self.used_indices += self.n_samples
             self.count += self.n_samples
 
-        indices = self.minor_indices[self.used_indices:].tolist()
+        indices = self.minor_indices[self.used_indices :].tolist()
         indices += np.random.choice(
             self.major_indices, len(indices), replace=False
         ).tolist()
