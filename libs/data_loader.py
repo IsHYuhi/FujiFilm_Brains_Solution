@@ -1,15 +1,15 @@
+import math
 import os
+from typing import Any, Dict, Generator, List, Optional, Tuple, Union
 
 import albumentations as A
 import cv2
-import pandas
 import numpy as np
+import pandas
 import torch
 import torch.utils.data as data
 from albumentations.pytorch import ToTensorV2
 from sklearn.model_selection import KFold, StratifiedKFold
-import math
-from typing import Any, Dict, Tuple, Optional, Union, List, Generator
 
 
 def make_datapath_list(
@@ -57,8 +57,8 @@ def make_datapath_list(
         return path_train_list, path_val_list
 
     elif phase == "test":
-        f = open('csv/Q2_test.txt', 'r', encoding='UTF-8')
-        path_list =[path[:-1] for path in  f.readlines()]
+        f = open("csv/Q2_test.txt", "r", encoding="UTF-8")
+        path_list = [path[:-1] for path in f.readlines()]
         path_test_list = {"img": list(path_list[0])}
         f.close()
 
@@ -123,8 +123,8 @@ def seg_make_datapath_list(
             return path_train_list, path_val_list
 
         elif phase == "test":
-            f = open('csv/Q2_test.txt', 'r', encoding='UTF-8')
-            path_list =[path[:-1] for path in  f.readlines()]
+            f = open("csv/Q2_test.txt", "r", encoding="UTF-8")
+            path_list = [path[:-1] for path in f.readlines()]
             path_test_list = {"img": list(path_list)}
             f.close()
 
@@ -158,11 +158,14 @@ class ImageTransform:
             ),
         }
 
-    def __call__(self, image: Union[List, np.ndarray], phase: str) -> Dict[str, torch.Tensor]:
+    def __call__(
+        self, image: Union[List, np.ndarray], phase: str
+    ) -> Dict[str, torch.Tensor]:
         if isinstance(image, list):
             return self.data_transform[phase](image=image[0], mask=image[1])
         else:
             return self.data_transform[phase](image=image)
+
 
 class SegImageTransform:
     def __init__(self, size: int, mean: Tuple, std: Tuple) -> None:
@@ -175,7 +178,7 @@ class SegImageTransform:
                     A.VerticalFlip(p=0.5),
                     A.Transpose(p=0.5),
                     A.CoarseDropout(p=0.5),
-                    A.RandomGridShuffle(p=0.5), # Q2:off Q3:on
+                    A.RandomGridShuffle(p=0.5),  # Q2:off Q3:on
                     A.RandomResizedCrop(size, size, interpolation=cv2.INTER_NEAREST),
                     # A.ElasticTransform(p=0.5),
                     # A.GridDistortion(p=0.5),
@@ -195,7 +198,9 @@ class SegImageTransform:
             ),
         }
 
-    def __call__(self, image: Union[List, np.ndarray], phase: str) -> Dict[str, torch.Tensor]:
+    def __call__(
+        self, image: Union[List, np.ndarray], phase: str
+    ) -> Dict[str, torch.Tensor]:
         if isinstance(image, list):
             return self.data_transform[phase](image=image[0], mask=image[1])
         else:
@@ -220,7 +225,9 @@ class ImageDataset(data.Dataset):
     def __len__(self) -> int:
         return len(self.img_list["img"])
 
-    def __getitem__(self, index: int) -> Union[torch.Tensor, Tuple[torch.Tensor, int], None]:
+    def __getitem__(
+        self, index: int
+    ) -> Union[torch.Tensor, Tuple[torch.Tensor, int], None]:
         """
         get tensor type preprocessed Image
         """
@@ -280,6 +287,7 @@ class SegImageDataset(data.Dataset):
             return img["image"]
 
         return None
+
 
 class BinaryBalancedSampler:
     def __init__(

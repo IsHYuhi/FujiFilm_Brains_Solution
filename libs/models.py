@@ -34,7 +34,9 @@ def weights_init(init_type: str = "gaussian") -> Callable[[nn.Module], None]:
             elif init_type == "xavier":
                 nn.init.xavier_normal_(cast(torch.Tensor, m.weight), gain=math.sqrt(2))
             elif init_type == "kaiming":
-                nn.init.kaiming_normal_(cast(torch.Tensor, m.weight), a=0, mode="fan_in")
+                nn.init.kaiming_normal_(
+                    cast(torch.Tensor, m.weight), a=0, mode="fan_in"
+                )
             elif init_type == "orthogonal":
                 nn.init.orthogonal_(cast(torch.Tensor, m.weight), gain=math.sqrt(2))
             elif init_type == "default":

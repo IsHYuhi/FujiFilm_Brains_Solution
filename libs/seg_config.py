@@ -5,7 +5,6 @@ from typing import Any, Dict, Tuple
 
 import yaml
 
-
 __all__ = ["get_config"]
 
 logger = getLogger(__name__)

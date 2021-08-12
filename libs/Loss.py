@@ -1,8 +1,9 @@
+from typing import Any, List, Union
+
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from typing import Any, List, Union, Tuple
 
 
 class BinaryFocalLoss(nn.Module):
