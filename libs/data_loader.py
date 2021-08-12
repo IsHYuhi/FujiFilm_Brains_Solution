@@ -37,9 +37,7 @@ def make_datapath_list(
         return path_train_list, path_test_list
 
     elif dataset_name == "Q2" and phase == "train":
-        rootpath = "./csv/{:s}_train_label.csv".format(
-            dataset_name
-        )
+        rootpath = "./csv/{:s}_train_label.csv".format(dataset_name)
         path_list = pandas.read_csv(rootpath, header=None)
         cv = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=42)
         for i, (train, val) in enumerate(
