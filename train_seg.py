@@ -299,7 +299,10 @@ def train_model(
                 val_losses += [epoch_net_loss / batch_size]
                 val_fbs += [np.mean(FBetas)]
 
-        plot_log({"net": net_losses, "val_loss": val_losses, "val_fb": val_fbs}, save_model_name)
+        plot_log(
+            {"net": net_losses, "val_loss": val_losses, "val_fb": val_fbs},
+            save_model_name,
+        )
 
         if epoch % 500 == 0:
             torch.save(
