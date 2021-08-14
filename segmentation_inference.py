@@ -207,7 +207,6 @@ def main(
     numbers = glob.glob("./{:s}/reconst/*".format(wall_type))
     numbers = sorted([num.split("/")[-1].split(".")[0] for num in numbers])
     print("the number of {:s} type is {:d}".format(parser.wall_type, len(numbers)))
-    # numbers = numbers[:1]
     width = 13 if wall_type == "P" else 14
 
     dir = "submission_segmentation/{:s}".format(load_model_name)
