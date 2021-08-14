@@ -2,7 +2,7 @@ import argparse
 import os
 import random
 import time
-from typing import Any, Dict, Tuple, cast
+from typing import Any, Dict, List, Tuple, cast
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -64,35 +64,21 @@ def unnormalize(x: torch.Tensor) -> torch.Tensor:
     return x
 
 
-def calc_acc_full(
-    net: nn.Module, dataset: SegImageDataset, device: str
-) -> Tuple[np.ndarray, np.ndarray]:
-    net.eval()
+def calc_fbscore(preds: torch.Tensor, gt_masks: torch.Tensor) -> List[float]:
     fbeta = FBetaScore(beta=0.5)
-    accs = []
     fbs = []
-    for i in range(len(dataset)):
-        img, gt_mask = dataset[i]
-        _, h, w = img.shape
-        img = torch.unsqueeze(img, dim=0)
-        gt_mask = gt_mask.to(device)
-
-        with torch.no_grad():
-
-            pred_mask = net(img.to(device))
-            pred_mask = pred_mask.detach()
-
-        b, c, h, w = pred_mask.shape
-        sm = h * w
+    for i in range(preds.shape[0]):
+        # c, h, w = preds[i].shape
+        # sm = h * w
         fbeta.reset()
-        pred_mask = torch.where(pred_mask > 0.5, 1, 0)
-        accuracy = pred_mask.eq(gt_mask.detach()).sum().item() / sm
-        fb = fbeta(pred_mask.view(-1, 1).float(), gt_mask.detach().view(-1, 1).float())
+        pred = torch.where(preds[i] > 0.5, 1, 0)
+        gt_mask = gt_masks[i].detach()
+        # accuracy = pred.eq(gt_mask).sum().item() / sm
+        fb = fbeta(pred.view(-1, 1).float(), gt_mask.detach().view(-1, 1).float())
 
-        accs.append(accuracy)
         fbs.append(fb)
 
-    return np.mean(accs), np.mean(fbs)
+    return fbs
 
 
 def evaluate(
@@ -151,15 +137,16 @@ def plot_log(data: Dict[str, Any], save_model_name: str = "model") -> None:
     plt.cla()
     fig = plt.figure()
     ax1 = fig.add_subplot(111)
-    ax1.plot(data["net"], label="loss ")
-    ax1.legend(loc="lower right")
+    ax1.plot(data["net"], label="loss")
+    ax1.plot(data["val_loss"], label="val_loss", color="green")
+    ax1.legend(loc="lower left")
     ax2 = ax1.twinx()
-    ax2.plot(data["val_loss"], label="val_loss", color="orange")
-    ax2.legend(loc="lower left")
+    ax2.plot(data["val_fb"], label="val_fb", color="orange")
+    ax2.legend(loc="lower right")
     ax1.set_xlabel("epoch")
-    ax1.set_ylabel("loss")
-    ax2.set_ylabel("val loss")
-    ax1.set_title("train loss")
+    ax1.set_ylabel("train/val loss")
+    ax2.set_ylabel("val FBeta")
+    ax1.set_title("train loss & val loss/FBeta")
     plt.savefig("./logs/" + save_model_name + ".png")
     plt.close()
 
@@ -241,9 +228,9 @@ def train_model(
     net_losses = []
     val_losses = []
     # val_acc = []
-    # val_fb = []
+    val_fbs = []
     # max_val_acc = 0
-    # max_val_fb = 0.0
+    max_val_fb = 0.0
     min_val_loss = float("inf")
     stop_count = 0
 
@@ -267,7 +254,7 @@ def train_model(
 
             batch_size = cast(int, dataloaders[phase].batch_size)
             epoch_net_loss = 0.0
-            # epoch_FBloss = 0.0
+            FBetas = []
 
             for images, gt_mask in tqdm(dataloaders[phase]):
 
@@ -299,7 +286,10 @@ def train_model(
 
                     epoch_net_loss += net_loss.item() / mini_batch_size
 
-            # epoch_val_acc, epoch_val_fb = calc_acc_full(net, val_dataset, device)
+                    if phase == "val":
+                        FBetas += calc_fbscore(
+                            pred_mask.detach().cpu(), gt_mask.detach().cpu()
+                        )
 
             # when using focal loss, some times loss explode.
             # TODO probablly when input image has only one class
@@ -307,8 +297,12 @@ def train_model(
                 net_losses += [epoch_net_loss / batch_size]
             if phase == "val":
                 val_losses += [epoch_net_loss / batch_size]
+                val_fbs += [np.mean(FBetas)]
 
-        plot_log({"net": net_losses, "val_loss": val_losses}, save_model_name)
+        plot_log(
+            {"net": net_losses, "val_loss": val_losses, "val_fb": val_fbs},
+            save_model_name,
+        )
 
         if epoch % 500 == 0:
             torch.save(
@@ -316,18 +310,26 @@ def train_model(
                 "checkpoints/" + save_model_name + "_" + str(epoch) + ".pth",
             )
 
-        if min_val_loss > val_losses[-1]:
+        if max_val_fb < val_fbs[-1]:
             stop_count = 0
             torch.save(
                 net.state_dict(),
                 "checkpoints/" + save_model_name + "_max_val_fb_net.pth",
             )
+            max_val_fb = val_fbs[-1]
+
+        if min_val_loss > val_losses[-1]:
+            stop_count = 0
+            torch.save(
+                net.state_dict(),
+                "checkpoints/" + save_model_name + "_min_val_loss_net.pth",
+            )
             min_val_loss = val_losses[-1]
 
         print("-----------")
         print(
-            "epoch {} || Loss:{:.4f} || Val_loss:{:.4f} || Min_val_loss:{:.4f}".format(
-                epoch, net_losses[-1], val_losses[-1], min_val_loss
+            "epoch {} || Loss:{:.4f} || Val_loss:{:.4f} || Max_FBeta:{:.4f}".format(
+                epoch, net_losses[-1], val_losses[-1], max_val_fb
             )
         )
         t_epoch_finish = time.time()

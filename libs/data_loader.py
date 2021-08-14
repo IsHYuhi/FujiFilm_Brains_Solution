@@ -57,7 +57,7 @@ def make_datapath_list(
     elif phase == "test":
         f = open("csv/Q2_test.txt", "r", encoding="UTF-8")
         path_list = [path[:-1] for path in f.readlines()]
-        path_test_list = {"img": list(path_list[0])}
+        path_test_list = {"img": list(path_list)}
         f.close()
 
         return path_test_list
@@ -156,13 +156,8 @@ class ImageTransform:
             ),
         }
 
-    def __call__(
-        self, image: Union[List, np.ndarray], phase: str
-    ) -> Dict[str, torch.Tensor]:
-        if isinstance(image, list):
-            return self.data_transform[phase](image=image[0], mask=image[1])
-        else:
-            return self.data_transform[phase](image=image)
+    def __call__(self, image: np.ndarray, phase: str) -> Dict[str, torch.Tensor]:
+        return self.data_transform[phase](image=image)
 
 
 class SegImageTransform:
@@ -230,17 +225,14 @@ class ImageDataset(data.Dataset):
         get tensor type preprocessed Image
         """
         img = cv2.imread(self.img_list["img"][index])
+        img = self.img_transform(img, self.phase)
 
         if self.phase == "train" or self.phase == "val":
             label = self.img_list["label"][index]
-            img = self.img_transform(img, self.phase)
-            # print(torch.max(img), torch.min(img))
             return img["image"], label
 
         elif self.phase == "test":
-            label = self.img_list["label"][index]
-            img = self.img_transform(img, self.phase)
-            return img["image"], label
+            return img["image"]
 
         return None
 

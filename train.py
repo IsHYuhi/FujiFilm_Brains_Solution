@@ -182,7 +182,7 @@ def train_model(
     stop_count: int = 0
 
     for epoch in range(parser.epoch + 1):
-        if stop_count > 300:
+        if stop_count > 500:
             net.eval()
             return net
         stop_count += 1
