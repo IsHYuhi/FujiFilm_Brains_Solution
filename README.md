@@ -44,3 +44,8 @@ CUDA_VISIBLE_DEVICES=0 python3 train_seg.py config/xxxx.yaml
 ```
 CUDA_VISIBLE_DEVICES=0 python3 segmentation_inference.py config/xxxx.yaml --threshold 0.5
 ```
+
+### zip
+```
+python3 pack.py config/xxxx.yaml
+```
