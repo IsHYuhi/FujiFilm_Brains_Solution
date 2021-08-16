@@ -1,5 +1,10 @@
 このリポジトリは[第6回Brain(s)コンテスト by FUJIFILM AI Academy Brain(s)](https://fujifilmdatasciencechallnge.mystrikingly.com/)の解法です.
-## check format
+
+demo notebookにsolutionが記述されています.
+
+### [🔥Demo Notebook(Google CoLab)](./solution.ipynb)
+
+## Checking format
 ```
 sh check_format.sh DIR SCRIPT ...
 ```
@@ -9,6 +14,7 @@ sh check_format.sh libs train.py train_seg.py
 ```
 
 ## Q1
+in ```./solution.ipynb```
 
 ## Q2
 ### training
@@ -26,7 +32,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_seg.py config/xxxx.yaml
 ### inference
 - ***classification***
 ```
-CUDA_VISIBLE_DEVICES=0 python3 Q2_inference.py config/xxxx.yaml --top-k 5
+CUDA_VISIBLE_DEVICES=0 python3 Q2_classification_inference.py config/xxxx.yaml --top-k 5
 ```
 
 - ***segmentation***
