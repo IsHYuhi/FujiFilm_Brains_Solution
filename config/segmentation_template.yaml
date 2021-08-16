@@ -1,0 +1,16 @@
+encoder_name: timm-efficientnet-b4
+model_name: Unet
+
+pretrained: false
+
+batch_size: 32
+
+image_size: 256
+
+num_workers: 2
+num_classes: 1
+epoch: 3000
+
+learning_rate: 0.0001
+
+dataset_name: Q3

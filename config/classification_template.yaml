@@ -1,0 +1,15 @@
+model_name: regnety_032
+pretrained: false
+
+batch_size: 64
+
+image_size: 256
+
+num_workers: 2
+num_classes: 2
+epoch: 5000
+
+learning_rate: 0.0001
+
+dataset_name: Q2
+optimizer: Adam
