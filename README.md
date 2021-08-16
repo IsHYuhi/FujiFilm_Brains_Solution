@@ -4,6 +4,26 @@ demo notebookにsolutionが記述されています.
 
 ### [🔥Demo Notebook(Google CoLab)](./solution.ipynb)
 
+## requirements
+```
+albumentations              1.0.3
+black                       21.7b0
+flake8                      3.9.2
+isort                       5.9.3
+matplotlib                  3.4.3
+mypy                        0.910
+opencv-python               4.5.3.56
+Pillow                      8.3.1
+pytorch-widedeep            1.0.5
+scikit-learn                0.24.2
+segmentation-models-pytorch 0.2.0
+timm                        0.4.12
+torch                       1.8.1+cu111
+torchaudio                  0.8.1
+torchmetrics                0.5.0
+torchvision                 0.9.1+cu111
+```
+
 ## Checking format
 ```
 sh check_format.sh DIR SCRIPT ...
