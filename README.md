@@ -69,6 +69,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_seg.py config/xxxx.yaml
 ### inference
 ```
 CUDA_VISIBLE_DEVICES=0 python3 segmentation_inference.py config/xxxx.yaml --threshold 0.5 --sub-pcon PCON_CONFIG_NAME --save-full-image
+```
 
 ### zip
 ```
