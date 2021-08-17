@@ -12,6 +12,7 @@ import torchvision.transforms as transforms
 from albumentations.pytorch import ToTensorV2
 from PIL import Image
 from torch import Tensor
+from torchvision.transforms.functional import InterpolationMode
 from tqdm import tqdm
 
 from libs.data_loader import seg_make_datapath_list
@@ -39,6 +40,7 @@ def get_parser() -> argparse.Namespace:
         "--threshold", type=float, default="0.5", help="threshold for baggin"
     )
     parser.add_argument("--save-full-image", action="store_true")
+    parser.add_argument("--sub-pcon", type=str, default=None)
 
     return parser.parse_args()
 
@@ -52,7 +54,9 @@ def get_tta_dic(h: int, w: int) -> Dict[str, Dict[str, Any]]:
                     ToTensorV2(),
                 ]
             ),
-            "untransform": transforms.Resize((h, w), interpolation=0),
+            "untransform": transforms.Resize(
+                (h, w), interpolation=InterpolationMode.NEAREST
+            ),
         },
         "hflip": {
             "transform": A.Compose(
@@ -98,7 +102,9 @@ def get_tta_dic(h: int, w: int) -> Dict[str, Dict[str, Any]]:
                     ToTensorV2(),
                 ]
             ),
-            "untransform": transforms.Resize((h, w), interpolation=0),
+            "untransform": transforms.Resize(
+                (h, w), interpolation=InterpolationMode.NEAREST
+            ),
         },
         "x2scale": {
             "transform": A.Compose(
@@ -108,7 +114,9 @@ def get_tta_dic(h: int, w: int) -> Dict[str, Dict[str, Any]]:
                     ToTensorV2(),
                 ]
             ),
-            "untransform": transforms.Resize((h, w), interpolation=0),
+            "untransform": transforms.Resize(
+                (h, w), interpolation=InterpolationMode.NEAREST
+            ),
         },
     }
     return tta_dic
@@ -206,6 +214,15 @@ def main(
 ) -> None:
     numbers = glob.glob("./{:s}/reconst/*".format(wall_type))
     numbers = sorted([num.split("/")[-1].split(".")[0] for num in numbers])
+    post_process_list = glob.glob(
+        "./{:s}/C{:s}/*".format(parser.wall_type, parser.wall_type)
+    )
+    post_process_list = [
+        path.split("/")[-1].split(".")[0].split("-")[0]
+        + "-"
+        + path.split("/")[-1].split(".")[0].split("-")[1]
+        for path in post_process_list
+    ]
     print("the number of {:s} type is {:d}".format(parser.wall_type, len(numbers)))
     width = 13 if wall_type == "P" else 14
 
@@ -262,15 +279,33 @@ def main(
         if config.dataset_name == "Q2" or parser.save_full_image:
             cv2.imwrite("{:s}_full/{:s}.png".format(dir, str(num)), save_fig)
 
+        if (parser.sub_pcon is not None) and (wall_type == "W"):
+            pcon = cv2.imread(
+                "./submission_segmentation/{:s}_full/{:s}.png".format(
+                    parser.sub_pcon, str(num)
+                ),
+                0,
+            )
+            save_fig = save_fig - pcon
+            save_fig = np.where(save_fig < 0, 0, save_fig)
+
         if config.dataset_name == "Q3":
             count = 1
             for h in range(width):
                 for w in range(18):
+                    if (
+                        "{:s}-{:s}".format(str(num).zfill(3), str(count))
+                        not in post_process_list
+                    ):
+                        save_fig[h * 256 : (h + 1) * 256, w * 256 : (w + 1) * 256] = 0
                     cv2.imwrite(
-                        "{:s}/{:s}-{:s}.png".format(dir, str(num), str(count)),
+                        "{:s}/{:s}-{:s}.png".format(dir, str(num).zfill(3), str(count)),
                         save_fig[h * 256 : (h + 1) * 256, w * 256 : (w + 1) * 256],
                     )
                     count += 1
+
+            if parser.save_full_image:
+                cv2.imwrite("{:s}_full/{:s}.png".format(dir, str(num)), save_fig)
 
 
 if __name__ == "__main__":
