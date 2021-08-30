@@ -37,6 +37,9 @@ sh check_format.sh libs train.py train_seg.py
 in ```./solution.ipynb```
 
 ## Q2
+### overview
+![Q2](https://user-images.githubusercontent.com/38097069/131364122-b70778d3-7918-4142-9a84-093ae9882267.png)
+
 ### training
 
 - ***classification***
@@ -61,6 +64,9 @@ CUDA_VISIBLE_DEVICES=0 python3 segmentation_inference.py config/xxxx.yaml --wall
 ```
 
 ## Q3
+### overview
+![Q3](https://user-images.githubusercontent.com/38097069/131364158-337cfabf-4a88-44ad-a200-433932fd66c4.png)
+
 ### training
 ```
 CUDA_VISIBLE_DEVICES=0 python3 train_seg.py config/xxxx.yaml
