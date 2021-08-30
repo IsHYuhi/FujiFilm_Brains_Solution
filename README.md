@@ -1,4 +1,4 @@
-このリポジトリは[第6回Brain(s)コンテスト by FUJIFILM AI Academy Brain(s)](https://fujifilmdatasciencechallnge.mystrikingly.com/)の解法です.
+このリポジトリは[第6回Brain(s)コンテスト by FUJIFILM AI Academy Brain(s)](https://fujifilmdatasciencechallnge.mystrikingly.com/)におけるQ2:2nd, Q3:1st place, 総合1位🥇の解法です.
 
 demo notebookにsolutionが記述されています.
 
