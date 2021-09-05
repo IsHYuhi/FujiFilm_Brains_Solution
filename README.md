@@ -38,7 +38,7 @@ in ```./solution.ipynb```
 
 ## Q2
 ### overview
-![Q2](https://user-images.githubusercontent.com/38097069/131364122-b70778d3-7918-4142-9a84-093ae9882267.png)
+![Q2](https://user-images.githubusercontent.com/38097069/132127332-f188dfce-8ac8-4876-a10d-dbeba284f799.png)
 
 ### training
 
